@@ -14,12 +14,13 @@ const DynamicTable = () => {
     return (<div>
             <table border="1">
                 <thead>
-                <th></th>
-                <th>星期一</th>
-                <th>星期二</th>
-                <th>星期三</th>
-                <th>星期四</th>
-                <th>星期五</th>
+                <tr>
+                    <th>星期一</th>
+                    <th>星期二</th>
+                    <th>星期三</th>
+                    <th>星期四</th>
+                    <th>星期五</th>
+                </tr>
                 </thead>
                 <tbody>
                 <tr>
