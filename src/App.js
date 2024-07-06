@@ -39,14 +39,17 @@ const DynamicTable = () => {
     const [data, setData] = useState(initData);
 
 
-    function handleDeleteRow() {
+    function handleDeleteRow(id) {
 
+        console.log(id);
+        const filter = data.filter(item => item.id !== id);
+        setData(filter);
     }
 
 
     function handleAddRow() {
-        const newUser  = {
-            id: data.length +1,
+        const newUser = {
+            id: data.length + 1,
             name: '',
             email: '',
             phone: '',
@@ -67,6 +70,7 @@ const DynamicTable = () => {
                 <th>电话号码</th>
                 <th>住址</th>
                 <th>年纪</th>
+                <th></th>
             </tr>
             </thead>
             <tbody>
@@ -77,15 +81,17 @@ const DynamicTable = () => {
                 <td>{item.phone}</td>
                 <td>{item.address}</td>
                 <td>{item.age}</td>
+                <th>
+                    <button onClick={() => handleDeleteRow(item.id)}>点击删除一行
+                    </button>
+                </th>
+
             </tr>))}
 
             </tbody>
 
         </table>
-        <button onClick={() => {
-            handleDeleteRow()
-        }}>点击删除一行
-        </button>
+
     </div>)
 }
 
