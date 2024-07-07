@@ -16,4 +16,8 @@ const sortOrder = (arr, config) => {
     })
 }
 
-export {deleteItem, addItem, sortOrder} ;
+const updateItemName = (arr, item, value)=>{
+    return arr.map(d=>d.id === item.id ? {...item, name: value} : d)
+}
+
+export {deleteItem, addItem, sortOrder, updateItemName} ;

@@ -1,7 +1,6 @@
-import logo from './logo.svg';
 import './App.css';
 import {useCallback, useMemo, useState} from "react";
-import {addItem, deleteItem, sortOrder} from "./table_data_operations";
+import {addItem, deleteItem, sortOrder, updateItemName} from "./table_data_operations";
 
 function App() {
 
@@ -63,7 +62,7 @@ const DynamicTable = () => {
             return (<>
                 <tr key={item.id}>
                     <td></td>
-                    <td><input type="text" value={item.name} onChange={(e) => handleOnChange(e.target.value, item)}/>
+                    <td><input type="text" value={item.name} onChange={(e) => handleOnChangeCb( item, e.target.value)}/>
                     </td>
                     <td>{item.email}</td>
                     <td>{item.phone}</td>
@@ -84,7 +83,6 @@ const DynamicTable = () => {
         setData(newData);
     }, [data]);
 
-
     // 缓存新增函数
     const addItemCb = useCallback(() => {
         const item = {
@@ -99,7 +97,6 @@ const DynamicTable = () => {
         setData(newData);
     }, [data]);
 
-
     // 排序函数
     const sortOrderCb = useCallback((config) => {
         const newData = sortOrder(data, config);
@@ -110,30 +107,11 @@ const DynamicTable = () => {
         setData(newData);
     }, [data])
 
-    // 增加年纪排序功能
-    function handleSort(config) {
-        const {direction} = config;
-        const newSortOrder = direction === 'asc' ? 'desc' : 'asc';
-        console.log(newSortOrder);
-
-        const filtered = [...data].sort((a, b) => {
-            const currentSortOrder = direction === 'asc' ? 1 : -1;
-            return (b.age - a.age) * currentSortOrder;
-        });
-        console.log(filtered);
-        setData(filtered);
-        setSortConfig({type: 'number', direction: newSortOrder});
-    }
-
-
     // 增加对表格数据的修改功能
-    const handleOnChange = (value, item) => {
-        const {id} = item;
-        const modifiedData = data.slice().map(item => item.id === id ? {...item, name: value} : item)
-        setData(modifiedData);
-
-        console.log(modifiedData);
-    }
+    const handleOnChangeCb = useCallback((item, value)=>{
+        const updatedItem = updateItemName(data, item, value);
+        setData(updatedItem);
+    },[data])
 
     return (<div>
         <button onClick={addItemCb}>点击新增一行</button>
