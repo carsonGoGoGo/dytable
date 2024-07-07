@@ -1,6 +1,6 @@
 import './App.css';
 import {useCallback, useMemo, useState} from "react";
-import {addItem, deleteItem, sortOrder, updateItemName} from "./table_data_operations";
+import {addItem, deleteItem, sortOrder, updateItem, updateItemName} from "./table_data_operations";
 
 function App() {
 
@@ -62,9 +62,10 @@ const DynamicTable = () => {
             return (<>
                 <tr key={item.id}>
                     <td></td>
-                    <td><input type="text" value={item.name} onChange={(e) => handleOnChangeCb( item, e.target.value)}/>
-                    </td>
-                    <td>{item.email}</td>
+                    <td><input type="text" value={item.name}
+                               onChange={(e) => handleOnChangeCb('name', item, e.target.value)}/></td>
+                    <td><input type="text" value={item.email}
+                               onChange={(e) => handleOnChangeCb('email', item, e.target.value)}/></td>
                     <td>{item.phone}</td>
                     <td>{item.address}</td>
                     <td>{item.age}</td>
@@ -107,11 +108,11 @@ const DynamicTable = () => {
         setData(newData);
     }, [data])
 
-    // 增加对表格数据的修改功能
-    const handleOnChangeCb = useCallback((item, value)=>{
-        const updatedItem = updateItemName(data, item, value);
+    // 增加对表格数据名字的修改功能
+    const handleOnChangeCb = useCallback((field, item, value) => {
+        const updatedItem = updateItem(data, field, item, value);
         setData(updatedItem);
-    },[data])
+    }, [data]);
 
     return (<div>
         <button onClick={addItemCb}>点击新增一行</button>
