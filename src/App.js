@@ -1,6 +1,6 @@
 import logo from './logo.svg';
 import './App.css';
-import {useState} from "react";
+import {useMemo, useState} from "react";
 
 function App() {
 
@@ -38,26 +38,32 @@ const DynamicTable = () => {
 
     const [data, setData] = useState(initData);
     const [sortConfig, setSortConfig] = useState({type: 'number', direction: 'asc'});
-
-    const renderHeader = () => {
-        return <thead>
-        <tr>
-            <th></th>
-            <th>名字</th>
-            <th>电子邮件</th>
-            <th>电话号码</th>
-            <th>住址</th>
-            <th onClick={() => handleSort({type: 'number', direction: sortConfig.direction === 'asc' ? 'asc' : 'desc'})}>年纪***</th>
-            <th></th>
-        </tr>
-        </thead>
-    }
-    const renderBody = () => {
+    const renderHeaderMemo = useMemo(() =>{
+        return (
+            <thead>
+            <tr>
+                <th></th>
+                <th>名字</th>
+                <th>电子邮件</th>
+                <th>电话号码</th>
+                <th>住址</th>
+                <th onClick={() => handleSort({
+                    type: 'number',
+                    direction: sortConfig.direction === 'asc' ? 'asc' : 'desc'
+                })}>年纪***
+                </th>
+                <th></th>
+            </tr>
+            </thead>
+        )
+    }, [sortConfig.direction])
+    const renderBodyMemo = useMemo(()=>{
         return data.map((item) => {
             return (<>
                 <tr key={item.id}>
                     <td></td>
-                    <td>{item.name}</td>
+                    <td><input type="text" value={item.name} onChange={(e) => handleOnChange(e.target.value, item)}/>
+                    </td>
                     <td>{item.email}</td>
                     <td>{item.phone}</td>
                     <td>{item.address}</td>
@@ -68,15 +74,16 @@ const DynamicTable = () => {
                 </tr>
             </>)
         });
-    }
+    }, [data]);
 
-
+    // 点击删除一行
     function handleDeleteRow(id) {
         const filter = data.filter(item => item.id !== id);
         setData(filter);
     }
 
 
+    // 点击新增一行
     function handleAddRow() {
         const newUser = {
             id: data.length + 1, name: '', email: '', phone: '', address: '', age: '',
@@ -99,12 +106,22 @@ const DynamicTable = () => {
         setSortConfig({type: 'number', direction: newSortOrder});
     }
 
+
+    // 增加对表格数据的修改功能
+    const handleOnChange = (value, item) => {
+        const {id} = item;
+        const modifiedData = data.slice().map(item => item.id === id ? {...item, name: value} : item)
+        setData(modifiedData);
+
+        console.log(modifiedData);
+    }
+
     return (<div>
         <button onClick={handleAddRow}>点击新增一行</button>
         <table border="1">
-            {renderHeader()}
+            {renderHeaderMemo}
             <tbody>
-            {renderBody()}
+            {renderBodyMemo}
             </tbody>
         </table>
     </div>)
