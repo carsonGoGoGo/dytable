@@ -1,6 +1,7 @@
 import logo from './logo.svg';
 import './App.css';
-import {useMemo, useState} from "react";
+import {useCallback, useMemo, useState} from "react";
+import {addItem, deleteItem, sortOrder} from "./table_data_operations";
 
 function App() {
 
@@ -38,7 +39,7 @@ const DynamicTable = () => {
 
     const [data, setData] = useState(initData);
     const [sortConfig, setSortConfig] = useState({type: 'number', direction: 'asc'});
-    const renderHeaderMemo = useMemo(() =>{
+    const renderHeaderMemo = useMemo(() => {
         return (
             <thead>
             <tr>
@@ -47,7 +48,7 @@ const DynamicTable = () => {
                 <th>电子邮件</th>
                 <th>电话号码</th>
                 <th>住址</th>
-                <th onClick={() => handleSort({
+                <th onClick={() => sortOrderCb({
                     type: 'number',
                     direction: sortConfig.direction === 'asc' ? 'asc' : 'desc'
                 })}>年纪***
@@ -56,8 +57,8 @@ const DynamicTable = () => {
             </tr>
             </thead>
         )
-    }, [sortConfig.direction])
-    const renderBodyMemo = useMemo(()=>{
+    }, [sortConfig.direction]);
+    const renderBodyMemo = useMemo(() => {
         return data.map((item) => {
             return (<>
                 <tr key={item.id}>
@@ -69,27 +70,45 @@ const DynamicTable = () => {
                     <td>{item.address}</td>
                     <td>{item.age}</td>
                     <th>
-                        <button onClick={() => handleDeleteRow(item.id)}>点击删除一行</button>
+                        <button onClick={() => handleDeleteCb(item.id)}>点击删除一行</button>
                     </th>
                 </tr>
             </>)
         });
     }, [data]);
 
-    // 点击删除一行
-    function handleDeleteRow(id) {
-        const filter = data.filter(item => item.id !== id);
-        setData(filter);
-    }
+    // 缓存删除函数
+    const handleDeleteCb = useCallback((id) => {
+        const newData = deleteItem(data, id);
+        console.log(newData);
+        setData(newData);
+    }, [data]);
 
 
-    // 点击新增一行
-    function handleAddRow() {
-        const newUser = {
-            id: data.length + 1, name: '', email: '', phone: '', address: '', age: '',
+    // 缓存新增函数
+    const addItemCb = useCallback(() => {
+        const item = {
+            id: data.length + 1,
+            name: '',
+            email: '',
+            phone: '',
+            address: '',
+            age: '',
         }
-        setData([...data, newUser]);
-    }
+        const newData = addItem(data, item);
+        setData(newData);
+    }, [data]);
+
+
+    // 排序函数
+    const sortOrderCb = useCallback((config) => {
+        const newData = sortOrder(data, config);
+        console.log(newData)
+
+        const newOrder = config.direction === 'asc' ? 'desc' : 'asc';
+        setSortConfig({type: 'number', direction: newOrder})
+        setData(newData);
+    }, [data])
 
     // 增加年纪排序功能
     function handleSort(config) {
@@ -117,7 +136,7 @@ const DynamicTable = () => {
     }
 
     return (<div>
-        <button onClick={handleAddRow}>点击新增一行</button>
+        <button onClick={addItemCb}>点击新增一行</button>
         <table border="1">
             {renderHeaderMemo}
             <tbody>
