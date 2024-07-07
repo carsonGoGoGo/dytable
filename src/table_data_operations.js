@@ -10,7 +10,7 @@ const addItem = (arr, item) => {
 
 const sortOrder = (arr, config) => {
     const {direction} = config;
-    return arr.slice().sort((a, b) => {
+    return [...arr].sort((a, b) => {
         const multiplier = direction === 'asc' ? 1 : -1;
         return (b.age - a.age) * multiplier;
     })
