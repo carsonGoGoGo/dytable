@@ -47,7 +47,7 @@ const DynamicTable = () => {
             <th>电子邮件</th>
             <th>电话号码</th>
             <th>住址</th>
-            <th onClick={() => handleSort()}>年纪***</th>
+            <th onClick={() => handleSort({type: 'number', direction: sortConfig.direction === 'asc' ? 'asc' : 'desc'})}>年纪***</th>
             <th></th>
         </tr>
         </thead>
@@ -85,12 +85,18 @@ const DynamicTable = () => {
     }
 
     // 增加年纪排序功能
-    function handleSort() {
+    function handleSort(config) {
+        const {direction} = config;
+        const newSortOrder = direction === 'asc' ? 'desc' : 'asc';
+        console.log(newSortOrder);
+
         const filtered = [...data].sort((a, b) => {
-            return b.age - a.age ;
+            const currentSortOrder = direction === 'asc' ? 1 : -1;
+            return (b.age - a.age) * currentSortOrder;
         });
-        console.log( filtered);
+        console.log(filtered);
         setData(filtered);
+        setSortConfig({type: 'number', direction: newSortOrder});
     }
 
     return (<div>
